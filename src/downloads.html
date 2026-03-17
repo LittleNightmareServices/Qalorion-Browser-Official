@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloads - Qalorion Browser</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--tab-text);
+            padding: 40px;
+            overflow-y: auto;
+            display: block;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        #downloads-list {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .download-item {
+            background: var(--toolbar-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .dl-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .dl-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .dl-progress-bar {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .dl-progress {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="downloads-list">
+        <h1><i class="fa-solid fa-download"></i> Downloads</h1>
+        <p id="empty-msg" style="text-align: center; color: #888;">No active downloads.</p>
+    </div>
+    <script src="downloads.js"></script>
+</body>
+</html>

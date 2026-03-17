@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, session } = require('electron');
+const { app, BrowserWindow, ipcMain, session, Menu } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
@@ -102,29 +102,6 @@ function createWindow() {
     });
   });
 
-  // --- Media Sniffer Logic ---
-  const filter = {
-    urls: ['*://*/*']
-  };
-
-  session.defaultSession.webRequest.onResponseStarted(filter, (details) => {
-    const contentType = details.responseHeaders['content-type']?.[0] || '';
-    const resourceType = details.resourceType;
-    
-    // Check for media types
-    if (contentType.startsWith('video/') || 
-        contentType.startsWith('audio/') || 
-        (contentType.startsWith('image/') && parseInt(details.responseHeaders['content-length']?.[0] || '0') > 100000)) { // Filter small images
-      
-      mainWindow.webContents.send('media-detected', {
-        url: details.url,
-        type: resourceType,
-        mimeType: contentType,
-        size: details.responseHeaders['content-length']?.[0] || 'Unknown'
-      });
-    }
-  });
-
   // --- Privacy Logic ---
   ipcMain.on('clear-data', (event, dataTypes) => {
     const ses = session.defaultSession;
@@ -136,6 +113,67 @@ function createWindow() {
     ses.clearStorageData(options).then(() => {
       mainWindow.webContents.send('hyper-notify', { title: 'Privacy', message: 'Browser data cleared successfully.' });
     });
+  });
+
+  // --- Helium Mode Logic ---
+  ipcMain.on('toggle-helium', (event, enabled) => {
+    if (mainWindow) {
+      mainWindow.setAlwaysOnTop(enabled, 'floating');
+      mainWindow.setOpacity(enabled ? 0.8 : 1.0);
+    }
+  });
+
+  // --- Context Menu Logic ---
+  app.on('web-contents-created', (e, contents) => {
+    if (contents.getType() === 'webview') {
+      contents.on('context-menu', (event, params) => {
+        const menu = new Menu();
+        
+        // Navigation
+        if (params.linkURL) {
+          menu.append(new Menu.Item({
+            label: 'Open Link in New Tab',
+            click: () => { mainWindow.webContents.send('open-new-tab', params.linkURL); }
+          }));
+          menu.append(new Menu.Item({
+            label: 'Copy Link Address',
+            role: 'copyLink'
+          }));
+          menu.append(new Menu.Item({ type: 'separator' }));
+        }
+
+        if (params.mediaType === 'image') {
+          menu.append(new Menu.Item({
+            label: 'Save Image As...',
+            click: () => { contents.downloadURL(params.srcURL); }
+          }));
+          menu.append(new Menu.Item({
+            label: 'Copy Image Address',
+            click: () => { require('electron').clipboard.writeText(params.srcURL); }
+          }));
+          menu.append(new Menu.Item({ type: 'separator' }));
+        }
+
+        menu.append(new Menu.Item({ label: 'Back', role: 'back', enabled: contents.canGoBack() }));
+        menu.append(new Menu.Item({ label: 'Forward', role: 'forward', enabled: contents.canGoForward() }));
+        menu.append(new Menu.Item({ label: 'Reload', role: 'reload' }));
+        menu.append(new Menu.Item({ type: 'separator' }));
+        
+        // Edit operations
+        menu.append(new Menu.Item({ label: 'Cut', role: 'cut', enabled: params.editFlags.canCut }));
+        menu.append(new Menu.Item({ label: 'Copy', role: 'copy', enabled: params.editFlags.canCopy }));
+        menu.append(new Menu.Item({ label: 'Paste', role: 'paste', enabled: params.editFlags.canPaste }));
+        menu.append(new Menu.Item({ type: 'separator' }));
+        
+        // DevTools
+        menu.append(new Menu.Item({
+          label: 'Inspect Element',
+          click: () => { contents.inspectElement(params.x, params.y); }
+        }));
+
+        menu.popup();
+      });
+    }
   });
 }
 
