@@ -50,12 +50,48 @@
                 <input type="text" id="url-input" class="address-bar" placeholder="Search or enter web address">
             </div>
             <button class="nav-btn" id="go-btn" title="Go"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="nav-btn" id="downloads-btn" title="Downloads"><i class="fa-solid fa-download"></i></button>
+            <button class="nav-btn" id="sniffer-btn" title="Media Sniffer"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
             <button class="nav-btn" id="settings-btn" title="Settings"><i class="fa-solid fa-gear"></i></button>
         </div>
 
         <!-- Webviews Container -->
         <div class="webview-container" id="webview-container">
             <!-- Webviews will be injected here -->
+        </div>
+    </div>
+
+    <!-- Downloads Overlay -->
+    <div class="settings-overlay" id="downloads-overlay" style="display: none;">
+        <div class="settings-modal" style="width: 500px;">
+            <div class="settings-header">
+                <h2>Downloads</h2>
+                <button id="close-downloads-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-content" id="downloads-list" style="max-height: 400px; overflow-y: auto;">
+                <p style="text-align: center; color: #888; font-size: 13px;">No active downloads.</p>
+                <!-- Downloads injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Sniffer Overlay -->
+    <div class="settings-overlay" id="sniffer-overlay" style="display: none;">
+        <div class="settings-modal" style="width: 600px;">
+            <div class="settings-header">
+                <h2>Media Sniffer</h2>
+                <button id="close-sniffer-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-content">
+                <p style="font-size: 12px; color: var(--tab-text); margin-bottom: 10px; opacity: 0.7;">
+                    Detected media files from current session. Click to download.
+                </p>
+                <div id="sniffer-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <p style="text-align: center; color: #888; font-size: 13px;">No media detected yet. Play a video or music!</p>
+                </div>
+                <hr>
+                <button id="clear-sniffer-btn" class="danger-btn" style="align-self: flex-end;">Clear List</button>
+            </div>
         </div>
     </div>
 
@@ -82,6 +118,14 @@
                         <input type="checkbox" id="hyperisland-toggle" checked>
                         <span class="slider round"></span>
                     </label>
+                </div>
+                <hr>
+                <div class="setting-item">
+                    <h3>Privacy & Security</h3>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                        <input type="checkbox" id="clear-exit-cb"> Clear Data on Exit
+                    </label>
+                    <button id="clear-data-now-btn" class="primary-btn" style="margin-top: 5px; font-size: 12px;">Clear Browsing Data Now</button>
                 </div>
                 <hr>
                 <div class="setting-item">

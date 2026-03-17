@@ -573,6 +573,94 @@ webview.active {
     opacity: 0.8;
 }
 
+/* Downloads List */
+.download-item {
+    background: var(--bg-color);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.dl-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.dl-name {
+    font-weight: 600;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dl-status {
+    color: #888;
+}
+
+.dl-progress-bar {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.dl-progress {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s;
+}
+
+/* Sniffer List */
+.sniffer-item {
+    display: flex;
+    align-items: center;
+    background: var(--bg-color);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    gap: 12px;
+}
+
+.sniffer-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--toolbar-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+}
+
+.sniffer-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.sniffer-url {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.sniffer-meta {
+    font-size: 11px;
+    color: #888;
+}
+
+.dl-media-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
 /* Switch styling */
 .switch {
   position: relative;

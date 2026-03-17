@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
@@ -56,6 +56,86 @@ function createWindow() {
     setTimeout(() => {
         autoUpdater.quitAndInstall();
     }, 5000);
+  });
+
+  // --- Download Manager Logic ---
+  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    const fileName = item.getFilename();
+    const url = item.getURL();
+    const startTime = Date.now();
+    
+    // Notify renderer about new download
+    mainWindow.webContents.send('download-started', {
+      filename: fileName,
+      url: url,
+      startTime: startTime
+    });
+
+    item.on('updated', (event, state) => {
+      if (state === 'interrupted') {
+        mainWindow.webContents.send('download-interrupted', { filename: fileName });
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          mainWindow.webContents.send('download-paused', { filename: fileName });
+        } else {
+          mainWindow.webContents.send('download-progress', {
+            filename: fileName,
+            receivedBytes: item.getReceivedBytes(),
+            totalBytes: item.getTotalBytes()
+          });
+        }
+      }
+    });
+
+    item.on('done', (event, state) => {
+      if (state === 'completed') {
+        mainWindow.webContents.send('download-completed', {
+          filename: fileName,
+          path: item.getSavePath()
+        });
+      } else {
+        mainWindow.webContents.send('download-failed', {
+          filename: fileName,
+          state: state
+        });
+      }
+    });
+  });
+
+  // --- Media Sniffer Logic ---
+  const filter = {
+    urls: ['*://*/*']
+  };
+
+  session.defaultSession.webRequest.onResponseStarted(filter, (details) => {
+    const contentType = details.responseHeaders['content-type']?.[0] || '';
+    const resourceType = details.resourceType;
+    
+    // Check for media types
+    if (contentType.startsWith('video/') || 
+        contentType.startsWith('audio/') || 
+        (contentType.startsWith('image/') && parseInt(details.responseHeaders['content-length']?.[0] || '0') > 100000)) { // Filter small images
+      
+      mainWindow.webContents.send('media-detected', {
+        url: details.url,
+        type: resourceType,
+        mimeType: contentType,
+        size: details.responseHeaders['content-length']?.[0] || 'Unknown'
+      });
+    }
+  });
+
+  // --- Privacy Logic ---
+  ipcMain.on('clear-data', (event, dataTypes) => {
+    const ses = session.defaultSession;
+    const options = {
+      storages: dataTypes || ['appcache', 'cookies', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
+      quotas: ['temporary', 'persistent', 'syncable']
+    };
+    
+    ses.clearStorageData(options).then(() => {
+      mainWindow.webContents.send('hyper-notify', { title: 'Privacy', message: 'Browser data cleared successfully.' });
+    });
   });
 }
 
