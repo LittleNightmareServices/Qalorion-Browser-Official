@@ -270,9 +270,11 @@ function initOnboarding() {
 initOnboarding();
 
 // --- Downloads ---
-downloadsBtn.addEventListener('click', () => {
-    createTab('file://' + __dirname + '/downloads.html');
-});
+if (downloadsBtn) {
+    downloadsBtn.addEventListener('click', () => {
+        createTab('file://' + __dirname + '/downloads.html');
+    });
+}
 
 let downloadsList = [];
 ipcRenderer.on('download-started', (e, item) => {
@@ -295,13 +297,26 @@ const adBlockToggle = document.getElementById('adblock-toggle');
 const clearExitCb = document.getElementById('clear-exit-cb');
 const clearDataNowBtn = document.getElementById('clear-data-now-btn');
 
-settingsBtn.addEventListener('click', () => {
-    settingsOverlay.style.display = 'flex';
-});
+if (settingsBtn && settingsOverlay) {
+    settingsBtn.addEventListener('click', () => {
+        settingsOverlay.style.display = 'flex';
+    });
+}
 
-closeSettingsBtn.addEventListener('click', () => {
-    settingsOverlay.style.display = 'none';
-});
+if (closeSettingsBtn && settingsOverlay) {
+    closeSettingsBtn.addEventListener('click', () => {
+        settingsOverlay.style.display = 'none';
+    });
+}
+
+// Close settings when clicking outside
+if (settingsOverlay) {
+    settingsOverlay.addEventListener('click', (e) => {
+        if (e.target === settingsOverlay) {
+            settingsOverlay.style.display = 'none';
+        }
+    });
+}
 
 // Load saved theme
 const savedTheme = localStorage.getItem('qalorion_theme') || 'dark';

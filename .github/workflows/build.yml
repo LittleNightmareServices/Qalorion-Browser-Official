@@ -24,6 +24,10 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
+    - name: Update package.json version
+      run: |
+        npm version 1.0.${{ github.run_number }} --no-git-tag-version
+
     - name: Build Application
       run: npm run build
       env:
