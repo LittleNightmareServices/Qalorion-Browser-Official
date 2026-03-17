@@ -171,14 +171,6 @@ function createWindow() {
     });
   });
 
-  // --- Helium Mode Logic ---
-  ipcMain.on('toggle-helium', (event, enabled) => {
-    if (mainWindow) {
-      mainWindow.setAlwaysOnTop(enabled, 'floating');
-      mainWindow.setOpacity(enabled ? 0.8 : 1.0);
-    }
-  });
-
   // --- Context Menu Logic ---
   app.on('web-contents-created', (e, contents) => {
     if (contents.getType() === 'webview') {
