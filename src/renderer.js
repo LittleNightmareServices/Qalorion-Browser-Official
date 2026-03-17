@@ -1,15 +1,22 @@
 const { ipcRenderer } = require('electron');
 
+// --- Helper for Robust IPC ---
+function sendIPC(channel, ...args) {
+    try {
+        ipcRenderer.send(channel, ...args);
+    } catch (e) {
+        console.error(`Failed to send IPC message on channel ${channel}:`, e);
+    }
+}
+
 // --- Window Controls ---
-document.getElementById('minimize-btn').addEventListener('click', () => {
-    ipcRenderer.send('window-minimize');
-});
-document.getElementById('maximize-btn').addEventListener('click', () => {
-    ipcRenderer.send('window-maximize');
-});
-document.getElementById('close-btn').addEventListener('click', () => {
-    ipcRenderer.send('window-close');
-});
+const minimizeBtn = document.getElementById('minimize-btn');
+const maximizeBtn = document.getElementById('maximize-btn');
+const closeBtn = document.getElementById('close-btn');
+
+if (minimizeBtn) minimizeBtn.addEventListener('click', () => sendIPC('window-minimize'));
+if (maximizeBtn) maximizeBtn.addEventListener('click', () => sendIPC('window-maximize'));
+if (closeBtn) closeBtn.addEventListener('click', () => sendIPC('window-close'));
 
 // --- Browser Logic ---
 const tabBar = document.getElementById('tab-bar');
@@ -159,7 +166,7 @@ function closeTab(tabId) {
     tabs.splice(tabIndex, 1);
     
     if (tabs.length === 0) {
-        ipcRenderer.send('window-close');
+        sendIPC('window-close');
     } else if (activeTabId === tabId) {
         // Activate previous tab or next tab
         const nextIndex = Math.max(0, tabIndex - 1);
@@ -338,31 +345,39 @@ hyperislandToggle.addEventListener('change', (e) => {
 });
 
 // Load Helium Mode preference
-heliumToggle.addEventListener('change', (e) => {
-    ipcRenderer.send('toggle-helium', e.target.checked);
-});
+if (heliumToggle) {
+    heliumToggle.addEventListener('change', (e) => {
+        sendIPC('toggle-helium', e.target.checked);
+    });
+}
 
 // Privacy Settings
-clearExitCb.checked = localStorage.getItem('qalorion_clear_exit') === 'true';
-clearExitCb.addEventListener('change', (e) => {
-    localStorage.setItem('qalorion_clear_exit', e.target.checked);
-});
+if (clearExitCb) {
+    clearExitCb.checked = localStorage.getItem('qalorion_clear_exit') === 'true';
+    clearExitCb.addEventListener('change', (e) => {
+        localStorage.setItem('qalorion_clear_exit', e.target.checked);
+    });
+}
 
-clearDataNowBtn.addEventListener('click', () => {
-    if (confirm("Clear all browsing data (cookies, cache, history) now?")) {
-        ipcRenderer.send('clear-data');
-    }
-});
+if (clearDataNowBtn) {
+    clearDataNowBtn.addEventListener('click', () => {
+        if (confirm("Clear all browsing data (cookies, cache, history) now?")) {
+            sendIPC('clear-data');
+        }
+    });
+}
 
 // Reset Browser Logic
-resetBrowserBtn.addEventListener('click', () => {
-    if (confirm("Are you sure you want to reset the browser?")) {
-        const keepData = keepDataCb.checked;
-        localStorage.removeItem('qalorion_onboard_complete');
-        if (!keepData) localStorage.clear();
-        ipcRenderer.send('restart-app');
-    }
-});
+if (resetBrowserBtn) {
+    resetBrowserBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to reset the browser?")) {
+            const keepData = keepDataCb ? keepDataCb.checked : false;
+            localStorage.removeItem('qalorion_onboard_complete');
+            if (!keepData) localStorage.clear();
+            sendIPC('restart-app');
+        }
+    });
+}
 
 // --- HyperIsland Notifications ---
 const hyperIsland = document.getElementById('hyper-island');
