@@ -85,9 +85,19 @@ function createTab(url = 'https://www.google.com') {
             urlInput.value = e.url;
         }
     });
+
+    // Fix: Links opening in new program window
+    webview.addEventListener('new-window', (e) => {
+        createTab(e.url);
+    });
     
     activateTab(tabId);
 }
+
+// IPC from main process for new windows opened via window.open
+ipcRenderer.on('open-new-tab', (e, url) => {
+    createTab(url);
+});
 
 function activateTab(tabId) {
     activeTabId = tabId;
@@ -222,3 +232,89 @@ function initOnboarding() {
 
 // Initialize
 initOnboarding();
+
+// --- Settings & Themes ---
+const settingsBtn = document.getElementById('settings-btn');
+const settingsOverlay = document.getElementById('settings-overlay');
+const closeSettingsBtn = document.getElementById('close-settings-btn');
+const themeSelect = document.getElementById('theme-select');
+const resetBrowserBtn = document.getElementById('reset-browser-btn');
+const keepDataCb = document.getElementById('keep-data-cb');
+const hyperislandToggle = document.getElementById('hyperisland-toggle');
+
+settingsBtn.addEventListener('click', () => {
+    settingsOverlay.style.display = 'flex';
+});
+
+closeSettingsBtn.addEventListener('click', () => {
+    settingsOverlay.style.display = 'none';
+});
+
+// Load saved theme
+const savedTheme = localStorage.getItem('qalorion_theme') || 'dark';
+document.body.className = `theme-${savedTheme}`;
+themeSelect.value = savedTheme;
+
+themeSelect.addEventListener('change', (e) => {
+    const theme = e.target.value;
+    document.body.className = `theme-${theme}`;
+    localStorage.setItem('qalorion_theme', theme);
+});
+
+// Load HyperIsland preference
+const hyperIslandEnabled = localStorage.getItem('qalorion_hyperisland') !== 'false';
+hyperislandToggle.checked = hyperIslandEnabled;
+
+hyperislandToggle.addEventListener('change', (e) => {
+    localStorage.setItem('qalorion_hyperisland', e.target.checked);
+});
+
+// Reset Browser Logic
+resetBrowserBtn.addEventListener('click', () => {
+    if (confirm("Are you sure you want to reset the browser?")) {
+        const keepData = keepDataCb.checked;
+        
+        // Always remove onboarding so it shows again
+        localStorage.removeItem('qalorion_onboard_complete');
+        
+        if (!keepData) {
+            // Remove everything except what's necessary to start
+            localStorage.clear();
+        }
+        
+        // Restart app via main process
+        ipcRenderer.send('restart-app');
+    }
+});
+
+// --- HyperIsland Notifications ---
+const hyperIsland = document.getElementById('hyper-island');
+const islandTitle = document.getElementById('island-title');
+const islandMessage = document.getElementById('island-message');
+
+let islandTimeout;
+
+function showNotification(title, message, duration = 4000) {
+    // Check if user disabled it in settings
+    if (localStorage.getItem('qalorion_hyperisland') === 'false') return;
+
+    islandTitle.textContent = title;
+    islandMessage.textContent = message;
+    
+    hyperIsland.classList.add('show');
+    
+    clearTimeout(islandTimeout);
+    islandTimeout = setTimeout(() => {
+        hyperIsland.classList.remove('show');
+    }, duration);
+}
+
+// Listen for auto-update notifications from main process
+ipcRenderer.on('hyper-notify', (e, data) => {
+    showNotification(data.title, data.message, data.duration);
+});
+
+// Test notification on load if enabled
+setTimeout(() => {
+    showNotification("System", "Qalorion Browser loaded successfully.", 3000);
+}, 2000);

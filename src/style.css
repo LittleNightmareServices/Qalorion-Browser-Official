@@ -10,6 +10,48 @@
     --primary-color: #89b4fa;
     --primary-hover: #b4befe;
     --accent-color: #f38ba8;
+    --danger-color: #f38ba8;
+}
+
+body.theme-light {
+    --bg-color: #f5f5f5;
+    --titlebar-color: #e0e0e0;
+    --tab-bg: #eeeeee;
+    --tab-active-bg: #ffffff;
+    --tab-text: #333333;
+    --toolbar-bg: #ffffff;
+    --border-color: #cccccc;
+    --hover-bg: rgba(0, 0, 0, 0.1);
+    --primary-color: #0078d4;
+    --primary-hover: #005a9e;
+    --accent-color: #d13438;
+}
+
+body.theme-ocean {
+    --bg-color: #0f172a;
+    --titlebar-color: #020617;
+    --tab-bg: #1e293b;
+    --tab-active-bg: #334155;
+    --tab-text: #f8fafc;
+    --toolbar-bg: #0f172a;
+    --border-color: #334155;
+    --primary-color: #38bdf8;
+    --primary-hover: #7dd3fc;
+    --accent-color: #f43f5e;
+}
+
+body.theme-hacker {
+    --bg-color: #000000;
+    --titlebar-color: #0a0a0a;
+    --tab-bg: #111111;
+    --tab-active-bg: #222222;
+    --tab-text: #00ff00;
+    --toolbar-bg: #000000;
+    --border-color: #00ff00;
+    --hover-bg: rgba(0, 255, 0, 0.2);
+    --primary-color: #00ff00;
+    --primary-hover: #00cc00;
+    --accent-color: #ff0000;
 }
 
 * {
@@ -365,4 +407,217 @@ webview.active {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- HyperIsland (HyperOS style) --- */
+.hyper-island {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    background: #000;
+    border-radius: 30px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.hyper-island.show {
+    opacity: 1;
+    width: 320px;
+    height: 50px;
+    padding: 0 20px;
+}
+
+.island-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.2s;
+}
+
+.hyper-island.show .island-content {
+    opacity: 1;
+}
+
+#island-icon {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.island-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+#island-title {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#island-message {
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* --- Settings Overlay --- */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.settings-modal {
+    background: var(--toolbar-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+.settings-header {
+    background: var(--titlebar-color);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 12px 12px 0 0;
+}
+
+.settings-header h2 {
+    font-size: 16px;
+    color: var(--tab-text);
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--tab-text);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.icon-btn:hover {
+    color: var(--primary-color);
+}
+
+.settings-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.setting-item label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.setting-item select {
+    background: var(--bg-color);
+    color: var(--tab-text);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 6px;
+    outline: none;
+}
+
+.setting-item hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 10px 0;
+}
+
+.danger-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.danger-btn:hover {
+    opacity: 0.8;
+}
+
+/* Switch styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }

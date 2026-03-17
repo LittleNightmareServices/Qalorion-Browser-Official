@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
 
@@ -30,6 +31,32 @@ function createWindow() {
     }
   });
   ipcMain.on('window-close', () => mainWindow.close());
+  
+  // App restart
+  ipcMain.on('restart-app', () => {
+    app.relaunch();
+    app.exit(0);
+  });
+
+  // Handle new windows correctly
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    mainWindow.webContents.send('open-new-tab', details.url);
+    return { action: 'deny' };
+  });
+
+  // Auto Update logic
+  autoUpdater.checkForUpdatesAndNotify();
+
+  autoUpdater.on('update-available', () => {
+    mainWindow.webContents.send('hyper-notify', { title: 'Update Available', message: 'Downloading new version...' });
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    mainWindow.webContents.send('hyper-notify', { title: 'Update Ready', message: 'Restarting soon to install...', duration: 5000 });
+    setTimeout(() => {
+        autoUpdater.quitAndInstall();
+    }, 5000);
+  });
 }
 
 app.whenReady().then(() => {

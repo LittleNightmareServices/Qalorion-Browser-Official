@@ -22,6 +22,17 @@
         </div>
     </div>
 
+    <!-- HyperIsland Notification (HyperOS style) -->
+    <div id="hyper-island" class="hyper-island">
+        <div class="island-content">
+            <i id="island-icon" class="fa-solid fa-bell"></i>
+            <div class="island-text">
+                <span id="island-title">Notification</span>
+                <span id="island-message">Message</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Browser Main UI -->
     <div class="browser-ui">
         <!-- Tab Bar -->
@@ -39,11 +50,49 @@
                 <input type="text" id="url-input" class="address-bar" placeholder="Search or enter web address">
             </div>
             <button class="nav-btn" id="go-btn" title="Go"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="nav-btn" id="settings-btn" title="Settings"><i class="fa-solid fa-gear"></i></button>
         </div>
 
         <!-- Webviews Container -->
         <div class="webview-container" id="webview-container">
             <!-- Webviews will be injected here -->
+        </div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settings-overlay" style="display: none;">
+        <div class="settings-modal">
+            <div class="settings-header">
+                <h2>Settings</h2>
+                <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label>Theme</label>
+                    <select id="theme-select">
+                        <option value="dark">Dark (Default)</option>
+                        <option value="light">Light</option>
+                        <option value="ocean">Ocean Blue</option>
+                        <option value="hacker">Hacker Green</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>HyperIsland Notifications</label>
+                    <label class="switch">
+                        <input type="checkbox" id="hyperisland-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <hr>
+                <div class="setting-item">
+                    <h3>Reset Browser</h3>
+                    <p style="font-size: 12px; color: var(--tab-text); margin-bottom: 10px; opacity: 0.7;">Reset the browser to factory defaults. This will restart the app and show the onboarding guide again.</p>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 10px;">
+                        <input type="checkbox" id="keep-data-cb" checked> Keep Bookmarks & Passwords
+                    </label>
+                    <button id="reset-browser-btn" class="danger-btn">Reset Browser</button>
+                </div>
+            </div>
         </div>
     </div>
 
