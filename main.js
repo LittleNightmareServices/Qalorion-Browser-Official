@@ -1,8 +1,58 @@
-const { app, BrowserWindow, ipcMain, session, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, session, Menu, MenuItem, shell, net } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
+
+// --- Manual Version Check ---
+function checkForUpdatesManual() {
+  const versionUrl = 'https://raw.githubusercontent.com/LittleNightmareServices/Qalorion-Browser-Official/main/version.json';
+  
+  const request = net.request(versionUrl);
+  request.on('response', (response) => {
+    let data = '';
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
+    response.on('end', () => {
+      try {
+        const remoteVersion = JSON.parse(data).version;
+        const localVersion = app.getVersion();
+        
+        // Simple semantic version check (assumes x.y.z format)
+        if (remoteVersion !== localVersion && compareVersions(remoteVersion, localVersion) > 0) {
+           if (mainWindow) {
+             mainWindow.webContents.send('hyper-notify', { 
+               title: 'Update Available', 
+               message: `New version ${remoteVersion} detected. Starting auto-update...`,
+               duration: 8000
+             });
+             // Trigger electron-updater to handle the actual binary download/install
+             autoUpdater.checkForUpdates();
+           }
+        }
+      } catch (e) {
+        console.error('Failed to parse version.json', e);
+      }
+    });
+  });
+  request.on('error', (err) => {
+    console.error('Failed to check version.json', err);
+  });
+  request.end();
+}
+
+function compareVersions(v1, v2) {
+  const p1 = v1.split('.').map(Number);
+  const p2 = v2.split('.').map(Number);
+  for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+    const n1 = p1[i] || 0;
+    const n2 = p2[i] || 0;
+    if (n1 > n2) return 1;
+    if (n2 > n1) return -1;
+  }
+  return 0;
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -20,6 +70,11 @@ function createWindow() {
   });
 
   mainWindow.loadFile('src/index.html');
+
+  // Check for updates manually on startup
+  mainWindow.webContents.on('did-finish-load', () => {
+     checkForUpdatesManual();
+  });
 
   // Handle window controls IPC
   ipcMain.on('window-minimize', () => mainWindow.minimize());
@@ -45,10 +100,11 @@ function createWindow() {
   });
 
   // Auto Update logic
-  autoUpdater.checkForUpdatesAndNotify();
+  // autoUpdater.checkForUpdatesAndNotify(); // Disabled auto-check, we trigger it manually via version.json logic above
 
   autoUpdater.on('update-available', () => {
-    mainWindow.webContents.send('hyper-notify', { title: 'Update Available', message: 'Downloading new version...' });
+    // Only notify if not already notified by manual check, but safe to do again
+    mainWindow.webContents.send('hyper-notify', { title: 'Downloading Update', message: 'Downloading new version...' });
   });
 
   autoUpdater.on('update-downloaded', () => {
@@ -131,42 +187,42 @@ function createWindow() {
         
         // Navigation
         if (params.linkURL) {
-          menu.append(new Menu.Item({
+          menu.append(new MenuItem({
             label: 'Open Link in New Tab',
             click: () => { mainWindow.webContents.send('open-new-tab', params.linkURL); }
           }));
-          menu.append(new Menu.Item({
+          menu.append(new MenuItem({
             label: 'Copy Link Address',
             role: 'copyLink'
           }));
-          menu.append(new Menu.Item({ type: 'separator' }));
+          menu.append(new MenuItem({ type: 'separator' }));
         }
 
         if (params.mediaType === 'image') {
-          menu.append(new Menu.Item({
+          menu.append(new MenuItem({
             label: 'Save Image As...',
             click: () => { contents.downloadURL(params.srcURL); }
           }));
-          menu.append(new Menu.Item({
+          menu.append(new MenuItem({
             label: 'Copy Image Address',
             click: () => { require('electron').clipboard.writeText(params.srcURL); }
           }));
-          menu.append(new Menu.Item({ type: 'separator' }));
+          menu.append(new MenuItem({ type: 'separator' }));
         }
 
-        menu.append(new Menu.Item({ label: 'Back', role: 'back', enabled: contents.canGoBack() }));
-        menu.append(new Menu.Item({ label: 'Forward', role: 'forward', enabled: contents.canGoForward() }));
-        menu.append(new Menu.Item({ label: 'Reload', role: 'reload' }));
-        menu.append(new Menu.Item({ type: 'separator' }));
+        menu.append(new MenuItem({ label: 'Back', role: 'back', enabled: contents.canGoBack() }));
+        menu.append(new MenuItem({ label: 'Forward', role: 'forward', enabled: contents.canGoForward() }));
+        menu.append(new MenuItem({ label: 'Reload', role: 'reload' }));
+        menu.append(new MenuItem({ type: 'separator' }));
         
         // Edit operations
-        menu.append(new Menu.Item({ label: 'Cut', role: 'cut', enabled: params.editFlags.canCut }));
-        menu.append(new Menu.Item({ label: 'Copy', role: 'copy', enabled: params.editFlags.canCopy }));
-        menu.append(new Menu.Item({ label: 'Paste', role: 'paste', enabled: params.editFlags.canPaste }));
-        menu.append(new Menu.Item({ type: 'separator' }));
+        menu.append(new MenuItem({ label: 'Cut', role: 'cut', enabled: params.editFlags.canCut }));
+        menu.append(new MenuItem({ label: 'Copy', role: 'copy', enabled: params.editFlags.canCopy }));
+        menu.append(new MenuItem({ label: 'Paste', role: 'paste', enabled: params.editFlags.canPaste }));
+        menu.append(new MenuItem({ type: 'separator' }));
         
         // DevTools
-        menu.append(new Menu.Item({
+        menu.append(new MenuItem({
           label: 'Inspect Element',
           click: () => { contents.inspectElement(params.x, params.y); }
         }));

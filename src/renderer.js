@@ -289,6 +289,7 @@ const resetBrowserBtn = document.getElementById('reset-browser-btn');
 const keepDataCb = document.getElementById('keep-data-cb');
 const hyperislandToggle = document.getElementById('hyperisland-toggle');
 const heliumToggle = document.getElementById('helium-toggle');
+const adBlockToggle = document.getElementById('adblock-toggle');
 
 // New Settings Elements
 const clearExitCb = document.getElementById('clear-exit-cb');
