@@ -1,0 +1,36 @@
+{
+  "name": "qalorion-browser",
+  "version": "1.0.0",
+  "description": "Qalorion Browser - Official",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.qalorion.browser",
+    "productName": "Qalorion Browser",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "keywords": [
+    "browser",
+    "electron"
+  ],
+  "author": "LittleNightmareServices",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^29.1.0",
+    "electron-builder": "^24.13.3"
+  }
+}

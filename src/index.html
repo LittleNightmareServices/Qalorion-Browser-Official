@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qalorion Browser</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons (simplified) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Custom Title Bar -->
+    <div class="titlebar">
+        <div class="titlebar-drag-region"></div>
+        <div class="titlebar-title">
+            <i class="fa-solid fa-globe"></i> Qalorion Browser
+        </div>
+        <div class="titlebar-controls">
+            <button id="minimize-btn"><i class="fa-solid fa-minus"></i></button>
+            <button id="maximize-btn"><i class="fa-regular fa-square"></i></button>
+            <button id="close-btn" class="close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <!-- Browser Main UI -->
+    <div class="browser-ui">
+        <!-- Tab Bar -->
+        <div class="tab-bar" id="tab-bar">
+            <!-- Tabs will be injected here -->
+            <button class="new-tab-btn" id="new-tab-btn"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <!-- Toolbar (Address Bar, Navigation) -->
+        <div class="toolbar">
+            <button class="nav-btn" id="back-btn" title="Back"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="nav-btn" id="forward-btn" title="Forward"><i class="fa-solid fa-arrow-right"></i></button>
+            <button class="nav-btn" id="reload-btn" title="Reload"><i class="fa-solid fa-rotate-right"></i></button>
+            <div class="address-container">
+                <input type="text" id="url-input" class="address-bar" placeholder="Search or enter web address">
+            </div>
+            <button class="nav-btn" id="go-btn" title="Go"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+
+        <!-- Webviews Container -->
+        <div class="webview-container" id="webview-container">
+            <!-- Webviews will be injected here -->
+        </div>
+    </div>
+
+    <!-- First Install Onboard Guide Overlay -->
+    <div class="onboard-overlay" id="onboard-overlay" style="display: none;">
+        <div class="onboard-modal">
+            <div class="onboard-header">
+                <h2>Welcome to Qalorion Browser!</h2>
+            </div>
+            <div class="onboard-content">
+                <div class="onboard-step active" id="step-1">
+                    <i class="fa-solid fa-window-maximize step-icon"></i>
+                    <h3>Custom Title Bar & Controls</h3>
+                    <p>Enjoy a sleek, borderless design with custom window controls for an uninterrupted browsing experience.</p>
+                </div>
+                <div class="onboard-step" id="step-2" style="display: none;">
+                    <i class="fa-solid fa-layer-group step-icon"></i>
+                    <h3>Seamless Tabs</h3>
+                    <p>Open multiple pages at once. Click the "+" button to start a new tab and easily switch between them.</p>
+                </div>
+                <div class="onboard-step" id="step-3" style="display: none;">
+                    <i class="fa-solid fa-bolt step-icon"></i>
+                    <h3>Ready to Explore</h3>
+                    <p>You're all set! Enter a URL or search query in the address bar to begin your journey.</p>
+                </div>
+            </div>
+            <div class="onboard-footer">
+                <div class="onboard-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button id="onboard-next-btn" class="primary-btn">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Renderer Script -->
+    <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+:root {
+    --bg-color: #1e1e2e;
+    --titlebar-color: #11111b;
+    --tab-bg: #313244;
+    --tab-active-bg: #45475a;
+    --tab-text: #cdd6f4;
+    --toolbar-bg: #181825;
+    --border-color: #313244;
+    --hover-bg: rgba(255, 255, 255, 0.1);
+    --primary-color: #89b4fa;
+    --primary-hover: #b4befe;
+    --accent-color: #f38ba8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--tab-text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Custom Titlebar */
+.titlebar {
+    height: 32px;
+    background-color: var(--titlebar-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 1000;
+}
+
+.titlebar-drag-region {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 140px;
+    bottom: 0;
+    -webkit-app-region: drag;
+}
+
+.titlebar-title {
+    margin-left: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #a6adc8;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.titlebar-controls {
+    display: flex;
+    height: 100%;
+    -webkit-app-region: no-drag;
+}
+
+.titlebar-controls button {
+    width: 46px;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: #a6adc8;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.titlebar-controls button:hover {
+    background: var(--hover-bg);
+}
+
+.titlebar-controls button.close:hover {
+    background: var(--accent-color);
+    color: white;
+}
+
+/* Browser UI Structure */
+.browser-ui {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Tabs */
+.tab-bar {
+    display: flex;
+    height: 36px;
+    background-color: var(--titlebar-color);
+    padding: 0 8px;
+    align-items: center;
+    overflow-x: auto;
+    -webkit-app-region: no-drag;
+}
+
+.tab-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--tab-bg);
+    color: var(--tab-text);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 0 12px;
+    height: 32px;
+    min-width: 120px;
+    max-width: 220px;
+    margin-right: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    font-size: 12px;
+}
+
+.tab:hover {
+    background-color: var(--tab-active-bg);
+}
+
+.tab.active {
+    background-color: var(--toolbar-bg);
+    border-bottom: 2px solid var(--primary-color);
+    font-weight: 600;
+}
+
+.tab-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    pointer-events: none;
+}
+
+.tab-close {
+    border: none;
+    background: transparent;
+    color: var(--tab-text);
+    margin-left: 8px;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.new-tab-btn {
+    border: none;
+    background: transparent;
+    color: var(--tab-text);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+}
+
+.new-tab-btn:hover {
+    background: var(--hover-bg);
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    height: 44px;
+    background-color: var(--toolbar-bg);
+    padding: 0 12px;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-btn {
+    border: none;
+    background: transparent;
+    color: var(--tab-text);
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    background: var(--hover-bg);
+}
+
+.address-container {
+    flex: 1;
+    display: flex;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    height: 30px;
+    padding: 0 16px;
+    align-items: center;
+}
+
+.address-bar {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--tab-text);
+    font-size: 13px;
+    outline: none;
+}
+
+/* Webviews */
+.webview-container {
+    flex: 1;
+    position: relative;
+    background-color: white;
+}
+
+webview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+webview.active {
+    display: flex;
+}
+
+/* Onboard Overlay */
+.onboard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.onboard-modal {
+    background: var(--toolbar-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.onboard-header {
+    background: var(--titlebar-color);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.onboard-header h2 {
+    color: var(--primary-color);
+    font-size: 20px;
+}
+
+.onboard-content {
+    padding: 30px;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onboard-step {
+    animation: fadeIn 0.4s ease;
+}
+
+.step-icon {
+    font-size: 48px;
+    color: var(--primary-hover);
+    margin-bottom: 20px;
+}
+
+.onboard-step h3 {
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.onboard-step p {
+    color: #a6adc8;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.onboard-footer {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.onboard-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color);
+    transition: background 0.3s;
+}
+
+.dot.active {
+    background: var(--primary-color);
+}
+
+.primary-btn {
+    background: var(--primary-color);
+    color: var(--toolbar-bg);
+    border: none;
+    padding: 8px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
